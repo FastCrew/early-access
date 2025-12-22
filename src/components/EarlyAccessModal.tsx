@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Loader2, User, Building2, AlertCircle } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabase, isConfigured } from "@/lib/supabase";
 import { useModal } from "@/context/ModalContext";
 import { cn } from "@/lib/utils";
 
@@ -51,41 +51,103 @@ export function EarlyAccessModal() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validation checks
     if (!role) {
       setErrorMessage("Please select a role first");
+      console.warn("[EarlyAccessModal] Validation failed: No role selected");
       return;
     }
 
     if (!validateEmail(email)) {
       setErrorMessage("Please enter a valid email address");
+      console.warn("[EarlyAccessModal] Validation failed: Invalid email format", { email });
+      return;
+    }
+
+    // Check Supabase configuration
+    if (!isConfigured) {
+      setStatus("error");
+      setErrorMessage("Service temporarily unavailable. Please try again later.");
+      console.error(
+        "%c[EarlyAccessModal] Configuration Error",
+        "color: red; font-weight: bold;",
+        "\nSupabase is not properly configured.",
+        "\nPlease check your environment variables."
+      );
       return;
     }
 
     setStatus("loading");
     setErrorMessage("");
 
+    console.log(
+      "%c[EarlyAccessModal] Submitting signup",
+      "color: blue; font-weight: bold;",
+      { role, email, timestamp: new Date().toISOString() }
+    );
+
     try {
       const table = role === "talent" ? "talent_waitlist" : "partner_waitlist";
-      const { error } = await supabase
+      const { error, data } = await supabase
         .from(table)
-        .insert([{ email, source: "landing_page" }]);
+        .insert([{ email, source: "landing_page" }])
+        .select();
 
       if (error) {
+        // Log the full error details for debugging
+        console.error(
+          "%c[EarlyAccessModal] Database Error",
+          "color: red; font-weight: bold;",
+          {
+            code: error.code,
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            table,
+            email,
+            timestamp: new Date().toISOString()
+          }
+        );
+
+        // Handle specific error codes
         if (error.code === "23505") {
-          // Unique violation
-          // Check if we can treat this as success or specific error
-          // PRD says: "This email is already on the waitlist!"
+          // Unique constraint violation - duplicate email
           throw new Error("This email is already on the waitlist!");
+        } else if (error.code === "PGRST116") {
+          // Table not found
+          throw new Error("Service configuration error. Please contact support.");
+        } else if (error.message.includes("Failed to fetch") || error.message.includes("NetworkError")) {
+          // Network error
+          throw new Error("Unable to connect. Please check your internet connection.");
+        } else {
+          // Generic database error with code for support
+          throw new Error(`Database error (${error.code}). Please try again or contact support.`);
         }
-        throw error;
       }
+
+      // Success!
+      console.log(
+        "%c[EarlyAccessModal] Signup successful!",
+        "color: green; font-weight: bold;",
+        { role, email, data, timestamp: new Date().toISOString() }
+      );
 
       setStatus("success");
       setTimeout(() => {
         closeModal();
       }, 1500);
     } catch (err) {
-      console.error(err);
+      console.error(
+        "%c[EarlyAccessModal] Signup failed",
+        "color: red; font-weight: bold;",
+        {
+          error: err,
+          errorMessage: err instanceof Error ? err.message : "Unknown error",
+          stack: err instanceof Error ? err.stack : undefined,
+          timestamp: new Date().toISOString()
+        }
+      );
+
       setStatus("error");
       setErrorMessage(
         err instanceof Error ? err.message : "Something went wrong. Try again.",
