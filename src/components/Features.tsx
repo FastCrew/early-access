@@ -15,7 +15,7 @@ const steps = [
     {
         number: 2,
         title: "Get Verified",
-        description: "Pass a quick background check to access premium shifts at top restaurants. Only ₹99, once.",
+        description: "Pass a quick background check to access premium shifts at top restaurants.",
         icon: ShieldCheck,
         color: "bg-[#1DBF73]",
     },
@@ -39,8 +39,7 @@ export function Features() {
                         initial={{ opacity: 0, y: 10 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="text-[#1DBF73] font-semibold text-xs tracking-[1px] mb-2 uppercase"
-                    >
+                        className="text-[#1DBF73] font-semibold text-xs tracking-[1px] mb-2 uppercase brightness-55 dark:brightness-100">
                         The Process
                     </motion.h4>
                     <motion.h2
@@ -71,7 +70,7 @@ export function Features() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1 + 0.3 }}
-                            whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                            whileHover={{ y: -8, transition: { duration: 0.1 } }}
                             className="bg-white/90 dark:bg-[#1A1A1A] backdrop-blur-sm p-8 rounded-xl border border-white/50 border-b-neutral-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 group"
                         >
                             <div className="flex flex-col items-center text-center">

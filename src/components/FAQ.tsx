@@ -43,7 +43,10 @@ export function FAQ() {
     };
 
     return (
-        <section id="faq" className="py-24 bg-transparent dark:bg-black">
+        <section id="faq" className="py-24 relative bg-transparent overflow-hidden">
+            {/* Dark Mode Top Transition */}
+            <div className="absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-transparent to-black dark:block hidden -z-10" />
+            <div className="absolute inset-x-0 bottom-0 top-80 bg-transparent dark:bg-black/95 dark:block hidden -z-20" />
             <div className="container px-6 mx-auto max-w-4xl">
                 <div className="text-center mb-16">
                     <motion.h2

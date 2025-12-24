@@ -65,14 +65,19 @@ export function Pricing() {
   const { openModal } = useModal();
 
   return (
-    <section className="py-24 bg-[#F8F8F8] dark:bg-black/20 overflow-hidden relative">
+    <section className="py-24 bg-transparent overflow-hidden relative">
+      {/* Smooth Background Transition */}
+      <div className="absolute inset-x-0 top-80 bottom-80 bg-[#F8F8F8] dark:bg-black/20 -z-10" />
+      <div className="absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-transparent via-[#F8F8F8]/80 to-[#F8F8F8] dark:via-black/10 dark:to-black/20 -z-10 backdrop-blur-[2px]" />
+      <div className="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-transparent via-[#F8F8F8]/80 to-[#F8F8F8] dark:via-black/10 dark:to-black/20 -z-10" />
+
       <div className="container px-6 mx-auto max-w-7xl relative z-10">
         <div className="text-center mb-16">
           <motion.h4
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-[#1DBF73] font-semibold text-xs tracking-[1px] mb-2 uppercase"
+            className="text-[#1DBF73] font-semibold text-xs tracking-[1px] mb-2 uppercase brightness-55 dark:brightness-100"
           >
             MEMBERSHIP
           </motion.h4>

@@ -40,7 +40,11 @@ export function Hero() {
   const { openModal } = useModal();
 
   return (
-    <section className="relative min-h-[90vh] flex items-center pt-24 pb-12 lg:pt-32 overflow-hidden bg-white dark:bg-black">
+    <section className="relative min-h-[90vh] flex items-center pt-24 pb-12 lg:pt-32 overflow-hidden bg-transparent">
+      {/* Section Background with Smooth Fade-out */}
+      <div className="absolute inset-x-0 top-0 bottom-80 bg-white dark:bg-black -z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-b from-white via-white/90 to-transparent dark:from-black dark:via-black/90 dark:to-transparent -z-10 backdrop-blur-[2px]" />
+
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left Column: Text Content */}
@@ -64,6 +68,9 @@ export function Hero() {
             >
               Find verified jobs at top restaurants in Kolkata. No agencies. No delays. Just real work and real money.
             </motion.p>
+
+            {/* Mobile Job Ticker - now positioned between text and buttons on mobile */}
+            <MobileJobTicker />
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -172,6 +179,84 @@ function JobTicker() {
                   <div className="flex items-center justify-between text-xs text-[#999999]">
                     <span className="flex items-center gap-1">
                       <span className="w-2 h-2 rounded-full bg-[#1DBF73] animate-pulse" />
+                      Live Now
+                    </span>
+                    <span>{job.time}</span>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+function MobileJobTicker() {
+  const [activeJobIndex, setActiveJobIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveJobIndex((prev) => (prev + 1) % jobs.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="lg:hidden w-full mt-4 mb-10 relative h-40 flex justify-center lg:justify-start overflow-visible">
+      <div className="relative w-full max-w-[320px] h-full">
+        <AnimatePresence mode="popLayout">
+          {jobs.map((job, index) => {
+            const relativeIndex = (index - activeJobIndex + jobs.length) % jobs.length;
+
+            if (relativeIndex > 2) return null;
+
+            return (
+              <motion.div
+                key={job.id}
+                layoutId={`mobile-card-${job.id}`}
+                initial={{ opacity: 0, scale: 0.8, y: 50 }}
+                animate={{
+                  opacity: relativeIndex === 0 ? 1 : 1 - relativeIndex * 0.3,
+                  scale: 1 - relativeIndex * 0.05,
+                  y: relativeIndex * 10,
+                  zIndex: jobs.length - relativeIndex
+                }}
+                exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                transition={{ duration: 0.4, ease: "easeInOut" }}
+                className="absolute inset-x-0 top-0"
+              >
+                <div className="bg-white dark:bg-[#1A1A1A] p-4 rounded-xl shadow-lg border border-[#E8E8E8] dark:border-white/10 border-l-4 border-l-[#1DBF73]">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                        <Building2 className="w-4 h-4 text-gray-500" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-sm text-[#1A1A1A] dark:text-white leading-tight">{job.title}</h3>
+                        <p className="text-xs text-[#666666] dark:text-gray-400">{job.restaurant}</p>
+                      </div>
+                    </div>
+                    <span className="px-1.5 py-0.5 bg-[#F0F7F4] text-[#1DBF73] text-[10px] font-bold rounded">
+                      {job.rate}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-xs text-[#666666] dark:text-gray-400 mb-3">
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {job.location}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      4 hrs
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[10px] text-[#999999]">
+                    <span className="flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#1DBF73] animate-pulse" />
                       Live Now
                     </span>
                     <span>{job.time}</span>

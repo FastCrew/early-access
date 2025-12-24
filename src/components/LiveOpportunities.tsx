@@ -66,7 +66,10 @@ export function LiveOpportunities() {
     const { openModal } = useModal();
 
     return (
-        <section className="py-24 bg-transparent dark:bg-black">
+        <section className="py-24 relative bg-transparent overflow-hidden">
+            {/* Dark Mode Top Transition */}
+            <div className="absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-transparent to-black dark:block hidden -z-10" />
+            <div className="absolute inset-x-0 bottom-0 top-80 bg-transparent dark:bg-black/90 dark:block hidden -z-20" />
             <div className="container px-6 mx-auto max-w-7xl">
                 <div className="text-center mb-16">
                     <motion.h2
@@ -155,7 +158,7 @@ export function LiveOpportunities() {
                         <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
                             <Building2 className="w-6 h-6 text-[#1DBF73]" />
                         </div>
-                        <h3 className="font-bold text-[#1A1A1A] dark:text-white mb-1">View All Jobs</h3>
+                        <h3 className="font-bold text-[#1A1A1A] dark:text-white mb-1 group-hover:text-[#1DBF73] group-hover:brightness-50 dark:group-hover:brightness-75 transition-colors">View All Jobs</h3>
                         <p className="text-xs text-[#666666] dark:text-gray-400">340+ active listings</p>
                     </motion.div>
                 </div>
