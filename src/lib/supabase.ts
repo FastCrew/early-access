@@ -5,6 +5,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // Create a placeholder client if env vars are not set (for build time)
 let supabase: SupabaseClient;
+export const isConfigured = !!(supabaseUrl && supabaseAnonKey);
 
 if (supabaseUrl && supabaseAnonKey) {
     supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -12,8 +13,11 @@ if (supabaseUrl && supabaseAnonKey) {
     // Create a mock client for build time - will fail at runtime if used without proper config
     supabase = createClient("https://placeholder.supabase.co", "placeholder-key");
     if (typeof window !== "undefined") {
-        console.warn(
-            "Supabase environment variables are not set. Please configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
+        console.error(
+            "%c[Supabase Configuration Error]",
+            "color: red; font-weight: bold; font-size: 14px;",
+            "\nSupabase environment variables are not set.",
+            "\nPlease configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your .env.local file."
         );
     }
 }
